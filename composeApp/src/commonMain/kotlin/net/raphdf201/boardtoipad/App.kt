@@ -1,31 +1,31 @@
 package net.raphdf201.boardtoipad
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun App() {
+    val dark = isSystemInDarkTheme()
+    val textColor = if (dark) Color.White else Color.Black
     MaterialTheme {
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text("test")
-            Button({
-
-            }) {
-                Text("te")
+        Surface(Modifier.fillMaxSize(), color = Color(30, 36, 48)) {
+            Column(
+                modifier = Modifier
+                    .safeContentPadding()
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                PickleBalls()
             }
         }
     }
