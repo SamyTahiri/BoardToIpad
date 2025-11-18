@@ -4,7 +4,7 @@ import edu.wpi.first.networktables.NetworkTableInstance
 
 var tableInstance: NetworkTableInstance? = null
 
-fun setupTable() {
+fun setupNetworkTables() {
     tableInstance = NetworkTableInstance.getDefault()
     tableInstance?.startClient("app")
     tableInstance?.setServer("robot.local")
