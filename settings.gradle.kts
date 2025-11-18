@@ -23,6 +23,7 @@ dependencyResolutionManagement {
                 includeGroupAndSubgroups("com.android")
                 includeGroupAndSubgroups("com.google")
             }
+            maven("https://frcmaven.wpi.edu/artifactory/wpilib-mvn-release-2027")
         }
         mavenCentral()
     }

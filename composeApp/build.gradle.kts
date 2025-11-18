@@ -32,9 +32,11 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
+            implementation(libs.wpilib.wpilibj)
+            implementation(libs.wpilib.wpiunits)
+            implementation(libs.wpilib.wpiutil)
+            implementation(libs.wpilib.ntcore)
+            implementation(libs.wpilib.hal)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
