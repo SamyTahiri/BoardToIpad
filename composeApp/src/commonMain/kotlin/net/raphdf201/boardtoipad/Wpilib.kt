@@ -2,9 +2,10 @@ package net.raphdf201.boardtoipad
 
 import edu.wpi.first.networktables.NetworkTableInstance
 
-val tableInstance = NetworkTableInstance.getDefault()!!
+var tableInstance: NetworkTableInstance? = null
 
 fun setupTable() {
-    tableInstance.startClient("app")
-    tableInstance.setServer("robot.local")
+    tableInstance = NetworkTableInstance.getDefault()
+    tableInstance?.startClient("app")
+    tableInstance?.setServer("robot.local")
 }
