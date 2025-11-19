@@ -1,11 +1,12 @@
 package net.raphdf201.boardtoipad
 
 import edu.wpi.first.networktables.NetworkTableInstance
+import edu.wpi.first.networktables.NetworkTableValue
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.cio.CIO
-import io.ktor.server.response.respondBytes
-import io.ktor.server.response.respondText
+import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
@@ -20,19 +21,13 @@ fun main() {
 fun Application.module() {
     routing {
         route("/nt4") {
-            get("/raw") {
-                call.respondBytes(networkTablesInstance.getTable(call.queryParameters["table"]).getValue(call.queryParameters["value"]).raw)
-            }
-            get("/double") {
-                call.respondText(networkTablesInstance.getTable(call.queryParameters["table"]).getValue(call.queryParameters["value"]).double.toString())
-            }
-            get("/string") {
-                call.respondText(networkTablesInstance.getTable(call.queryParameters["table"]).getValue(call.queryParameters["value"]).string.toString())
-            }
             get("/dynamic") {
-                val chose = networkTablesInstance.getTable(call.queryParameters["table"]).getValue(call.queryParameters["value"])
-                chose.type
-                call.respondText()
+                val chose: NetworkTableValue? = networkTablesInstance.getTable(call.queryParameters["table"]).getValue(call.queryParameters["value"])
+                if (chose == null) {
+                    call.respond(HttpStatusCode.NoContent)
+                    return@get
+                }
+                call.respond(DynamicResponse(chose.type.toKtorType(), chose.value))
             }
         }
     }
