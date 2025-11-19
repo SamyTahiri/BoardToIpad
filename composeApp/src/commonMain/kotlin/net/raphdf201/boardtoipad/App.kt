@@ -4,9 +4,11 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -19,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -26,34 +29,29 @@ fun App() {
     var dark by remember { mutableStateOf(true) }
     val textColor = if (dark) Color.White else Color.Black
     var connected by remember { mutableStateOf(false) }
+    val views = Views(Api())
     MaterialTheme {
         Surface(Modifier.fillMaxSize(), color =
             if (dark) Color(30, 36, 48)
             else Color.White
         ) {
             Column(
-                Modifier
-                    .safeContentPadding()
-                    .fillMaxSize(),
+                Modifier.fillMaxSize().padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Row(
                     Modifier.fillMaxWidth(),
-                    Arrangement.SpaceEvenly
+                    Arrangement.Start
                 ) {
-                    Button({
-                        connected = setupNetworkTables()
-                    }) {
-                        Text("Connect to robot", Modifier, textColor)
-                    }
                     Button({
                         dark = !dark
                     }) {
                         Text("dark mode", Modifier, textColor)
                     }
-                    Text("Connected : $connected", Modifier, textColor)
+                    Spacer(Modifier.width(10.dp))
+                    Text("Connected : $connected", Modifier.align(Alignment.CenterVertically), textColor)
                 }
-                PickleBalls()
+                views.PickleBalls()
             }
         }
     }
