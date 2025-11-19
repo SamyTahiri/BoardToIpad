@@ -20,7 +20,7 @@ import boardtoipad.composeapp.generated.resources.pickleball
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun PickleBalls() {
+fun Robots() {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
         val pickleball = painterResource(Res.drawable.pickleball)
         val interactionSource = remember { MutableInteractionSource() }

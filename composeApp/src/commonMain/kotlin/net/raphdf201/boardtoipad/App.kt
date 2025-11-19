@@ -1,7 +1,6 @@
 package net.raphdf201.boardtoipad
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,7 +23,7 @@ import androidx.compose.ui.graphics.Color
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun App() {
-    var dark by remember { mutableStateOf(false) }
+    var dark by remember { mutableStateOf(true) }
     val textColor = if (dark) Color.White else Color.Black
     var connected by remember { mutableStateOf(false) }
     MaterialTheme {
@@ -54,7 +53,7 @@ fun App() {
                     }
                     Text("Connected : $connected", Modifier, textColor)
                 }
-                PickleBalls()
+                Robots()
             }
         }
     }

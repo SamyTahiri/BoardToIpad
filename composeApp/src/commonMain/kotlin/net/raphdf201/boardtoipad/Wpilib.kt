@@ -6,10 +6,12 @@ var tableInstance: NetworkTableInstance? = null
 
 fun setupNetworkTables(): Boolean {
     if (tableInstance == null) {
-        tableInstance = NetworkTableInstance.getDefault()
-    }
-    if (tableInstance == null) {
-        return false
+        try {
+            tableInstance = NetworkTableInstance.getDefault()
+        } catch (e: Exception) {
+            println("CALIS setupNetworkTables() : ${e.message}")
+            return false
+        }
     }
     tableInstance!!.startClient("app")
     tableInstance!!.setServer("robot.local")
