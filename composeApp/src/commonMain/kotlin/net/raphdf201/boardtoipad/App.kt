@@ -53,7 +53,7 @@ fun App() {
                     }
                     Text("Connected : $connected", Modifier, textColor)
                 }
-                Robots()
+                PickleBalls()
             }
         }
     }
