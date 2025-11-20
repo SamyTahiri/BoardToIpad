@@ -1,7 +1,6 @@
 package net.raphdf201.boardtoipad
 
 import edu.wpi.first.networktables.NetworkTableType
-import io.ktor.http.ContentType
 
 fun NetworkTableType.toKtorType(): NTType {
     return when(this) {

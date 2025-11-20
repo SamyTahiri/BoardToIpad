@@ -29,6 +29,22 @@ fun Application.module() {
                 }
                 call.respond(DynamicResponse(chose.type.toKtorType(), chose.value))
             }
+            get("/string") {
+                val chose: NetworkTableValue? = networkTablesInstance.getTable(call.queryParameters["table"]).getValue(call.queryParameters["value"])
+                if (chose == null || !chose.isString) {
+                    call.respond(HttpStatusCode.NoContent)
+                    return@get
+                }
+                call.respond(StringResponse(chose.string))
+            }
+            get("/number") {
+                val chose: NetworkTableValue? = networkTablesInstance.getTable(call.queryParameters["table"]).getValue(call.queryParameters["value"])
+                if (chose == null || !chose.isDouble) {
+                    call.respond(HttpStatusCode.NoContent)
+                    return@get
+                }
+                call.respond(DoubleResponse(chose.double))
+            }
         }
     }
 }

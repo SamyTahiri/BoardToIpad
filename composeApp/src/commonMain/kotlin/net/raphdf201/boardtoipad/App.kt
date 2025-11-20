@@ -29,7 +29,7 @@ fun App() {
     var dark by remember { mutableStateOf(true) }
     val textColor = if (dark) Color.White else Color.Black
     var connected by remember { mutableStateOf(false) }
-    val views = Views(Api())
+    val views = remember { Views(Api()) }
     MaterialTheme {
         Surface(Modifier.fillMaxSize(), color =
             if (dark) Color(30, 36, 48)
