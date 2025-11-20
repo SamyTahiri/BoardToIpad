@@ -18,7 +18,7 @@ lateinit var networkTablesInstance: NetworkTableInstance
 fun main() {
     embeddedServer(CIO, 6967, module = Application::module).start(true)
     networkTablesInstance = NetworkTableInstance.getDefault()
-    networkTablesInstance.setServer(robot)
+    networkTablesInstance.setServer("localhost")
     networkTablesInstance.startClient("skibidiTablet")
 }
 

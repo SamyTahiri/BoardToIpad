@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +31,7 @@ fun App() {
     val textColor = if (dark) Color.White else Color.Black
     var connected by remember { mutableStateOf(false) }
     val views = remember { Views(Api()) }
+    val scope = rememberCoroutineScope()
     MaterialTheme {
         Surface(Modifier.fillMaxSize(), color =
             if (dark) Color(30, 36, 48)
@@ -51,6 +53,7 @@ fun App() {
                     Spacer(Modifier.width(10.dp))
                     Text("Connected : $connected", Modifier.align(Alignment.CenterVertically), textColor)
                 }
+                views.ListThings(scope)
                 views.PickleBalls()
             }
         }
