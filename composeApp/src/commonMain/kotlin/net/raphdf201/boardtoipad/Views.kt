@@ -15,8 +15,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -53,57 +53,61 @@ class Views(val api: Api) {
         val isPressed by interactionSource.collectIsPressedAsState()
 
         val scale by animateFloatAsState(
-            if (isPressed) .95f else 1f,
-            spring(
-                Spring.DampingRatioHighBouncy,
-                Spring.StiffnessHigh
-            )
+            targetValue = if (isPressed) 0.92f else 1f,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessHigh
+            ),
+            label = "scale"
         )
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .scale(scale)
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null
+                ) {
+                    println("clicked $type") // TODO : smartdashboard
+                }
         ) {
-            // Direction indicator and motor
+            // Direction indicator (arrows)
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier.size(100.dp, 80.dp)
+                modifier = Modifier.height(40.dp)
             ) {
                 DirectionIndicator(type)
-                Box(modifier = Modifier.offset(y = 10.dp)) {
-                    MotorWheel()
-                }
             }
+
+            // Motor wheel
+            MotorWheel()
 
             // Funnel
             FunnelShape()
 
             // Storage container (robot)
             Surface(
-                modifier = Modifier
-                    .size(120.dp, 110.dp)
-                    .clickable(
-                        interactionSource,
-                        null
-                    ) {
-                        println("clicked $type") // TODO : smartdashboard
-                    },
+                modifier = Modifier.size(120.dp, 110.dp),
                 shape = RoundedCornerShape(12.dp),
-                color = Color(0xFF8B9299)
+                color = Color(0xFF8B9299),
+                shadowElevation = if (isPressed) 2.dp else 4.dp
             ) {}
         }
     }
 
     @Composable
     private fun MotorWheel() {
-        val infiniteTransition = rememberInfiniteTransition()
+        val infiniteTransition = rememberInfiniteTransition(label = "motor")
         val rotation by infiniteTransition.animateFloat(
             initialValue = 0f,
             targetValue = 360f,
             animationSpec = infiniteRepeatable(
                 animation = tween(3000, easing = LinearEasing),
                 repeatMode = RepeatMode.Restart
-            )
+            ),
+            label = "rotation"
         )
 
         Surface(
@@ -172,7 +176,7 @@ class Views(val api: Api) {
             val centerX = size.width / 2
             val centerY = size.height / 2
             val arrowColor = Color(0xFFFCD34D)
-            val strokeWidth = 4.dp.toPx()
+            val strokeWidth = 3.5.dp.toPx()
             val arrowLength = 25.dp.toPx()
 
             // Left arrow line
@@ -215,7 +219,7 @@ class Views(val api: Api) {
             val centerX = size.width / 2
             val centerY = size.height / 2
             val arrowColor = Color(0xFF60A5FA)
-            val strokeWidth = 4.dp.toPx()
+            val strokeWidth = 3.5.dp.toPx()
             val arrowLength = 25.dp.toPx()
 
             // Vertical line through center
@@ -226,21 +230,21 @@ class Views(val api: Api) {
                 strokeWidth = strokeWidth
             )
 
-            // Up arrowhead
-            val upArrowPath = Path().apply {
+            // Down arrowhead (pointing down)
+            val downArrowPath = Path().apply {
                 moveTo(centerX - 8.dp.toPx(), centerY - arrowLength + 7.dp.toPx())
                 lineTo(centerX, centerY - arrowLength)
                 lineTo(centerX + 8.dp.toPx(), centerY - arrowLength + 7.dp.toPx())
             }
-            drawPath(upArrowPath, arrowColor, style = Stroke(width = strokeWidth))
+            drawPath(downArrowPath, arrowColor, style = Stroke(width = strokeWidth))
 
-            // Down arrowhead
-            val downArrowPath = Path().apply {
+            // Down arrowhead (pointing down at bottom)
+            val downArrowPath2 = Path().apply {
                 moveTo(centerX - 8.dp.toPx(), centerY + arrowLength - 7.dp.toPx())
                 lineTo(centerX, centerY + arrowLength)
                 lineTo(centerX + 8.dp.toPx(), centerY + arrowLength - 7.dp.toPx())
             }
-            drawPath(downArrowPath, arrowColor, style = Stroke(width = strokeWidth))
+            drawPath(downArrowPath2, arrowColor, style = Stroke(width = strokeWidth))
         }
     }
 
