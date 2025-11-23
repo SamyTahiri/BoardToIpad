@@ -24,7 +24,6 @@ dependencyResolutionManagement {
                 includeGroupAndSubgroups("com.google")
             }
         }
-        maven("https://frcmaven.wpi.edu/artifactory/wpilib-mvn-release-2027")
         mavenCentral()
     }
 }
@@ -34,5 +33,3 @@ plugins {
 }
 
 include(":composeApp")
-include(":server")
-include(":shared")

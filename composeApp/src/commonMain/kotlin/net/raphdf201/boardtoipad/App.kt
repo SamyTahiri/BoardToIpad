@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -30,7 +32,8 @@ fun App() {
     var dark by remember { mutableStateOf(true) }
     val textColor = if (dark) Color.White else Color.Black
     var connected by remember { mutableStateOf(false) }
-    val views = remember { Views(Api()) }
+    val api = remember { Api() }
+    val views = remember { Views(api) }
     val scope = rememberCoroutineScope()
     MaterialTheme {
         Surface(Modifier.fillMaxSize(), color =

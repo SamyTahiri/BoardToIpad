@@ -35,8 +35,9 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.cio)
             implementation(libs.ktor.client.contentNegotiation)
+            implementation(libs.ktor.client.webSockets)
             implementation(libs.ktor.serialization.kotlinx.json)
-            implementation(projects.shared)
+            implementation(libs.serialization.msgpack)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)

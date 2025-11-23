@@ -11,6 +11,7 @@ kotlin = "2.2.21"
 kotlinx-coroutines = "1.10.2"
 ktor = "3.3.2"
 logback = "1.5.21"
+serializationMsgpack = "0.6.0"
 wpilib = "2027.0.0-alpha-3"
 
 [libraries]
@@ -22,15 +23,12 @@ logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-contentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-webSockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
 ktor-server-cio = { module = "io.ktor:ktor-server-cio-jvm", version.ref = "ktor" }
 ktor-server-contentNegotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
-wpilib-wpilibj = { module = "edu.wpi.first.wpilibj:wpilibj-java", version.ref = "wpilib" }
-wpilib-wpiunits = { module = "edu.wpi.first.wpiunits:wpiunits-java", version.ref = "wpilib" }
-wpilib-wpiutil = { module = "edu.wpi.first.wpiutil:wpiutil-java", version.ref = "wpilib" }
-wpilib-ntcore = { module = "edu.wpi.first.ntcore:ntcore-java", version.ref = "wpilib" }
-wpilib-hal = { module = "edu.wpi.first.hal:hal-java", version.ref = "wpilib" }
+serialization-msgpack = { module = "com.ensarsarajcic.kotlinx:serialization-msgpack", version.ref = "serializationMsgpack" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
