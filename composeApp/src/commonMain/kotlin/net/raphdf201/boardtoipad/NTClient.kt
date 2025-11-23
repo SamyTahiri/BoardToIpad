@@ -9,9 +9,8 @@ import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
 import io.ktor.websocket.send
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.isActive
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.decodeFromByteArray
@@ -20,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap
 class NTClient(private val client: HttpClient) {
     val subscriptions = ConcurrentHashMap<String, Int>()
     val publications = ConcurrentHashMap<String, Int>()
+    var connected = false
     private val topics = ConcurrentHashMap<Int, TopicInfo>() // topicId -> topic info
     private val topicsByName = ConcurrentHashMap<String, Int>() // name -> topicId
     private var subId = 0
@@ -34,6 +34,7 @@ class NTClient(private val client: HttpClient) {
         ) {
             header("Sec-WebSocket-Protocol", "v4.1.networktables.first.wpi.edu")
         }
+        if (session.isActive) connected = true
     }
 
     suspend fun subscribe(topic: String) {
@@ -192,6 +193,56 @@ class NTClient(private val client: HttpClient) {
 
     fun getTopicId(name: String): Int? = topicsByName[name]
     fun getTopicInfo(id: Int): TopicInfo? = topics[id]
+
+    /**
+     * Get a list of all currently known topics
+     */
+    fun getAllTopics(): List<TopicInfo> = topics.values.toList()
+
+    /**
+     * Get all topic names
+     */
+    fun getAllTopicNames(): List<String> = topicsByName.keys.toList()
+
+    /**
+     * Subscribe to all topics by using an empty prefix
+     * This will cause the server to announce all existing and future topics
+     */
+    suspend fun subscribeToAllTopics(topicsOnly: Boolean = true) {
+        subscriptions[""] = subId
+        session.sendMessage(
+            "subscribe",
+            SubscribeMessage(
+                topics = listOf(""),
+                subuid = subId,
+                options = SubscriptionOptions(
+                    prefix = true,
+                    topicsonly = topicsOnly  // true = only get announcements, no values
+                )
+            )
+        )
+        subId++
+    }
+
+    /**
+     * Subscribe to topics with a specific prefix
+     * e.g., subscribeToPrefix("/SmartDashboard/") to get all SmartDashboard topics
+     */
+    suspend fun subscribeToPrefix(prefix: String, topicsOnly: Boolean = false) {
+        subscriptions[prefix] = subId
+        session.sendMessage(
+            "subscribe",
+            SubscribeMessage(
+                topics = listOf(prefix),
+                subuid = subId,
+                options = SubscriptionOptions(
+                    prefix = true,
+                    topicsonly = topicsOnly
+                )
+            )
+        )
+        subId++
+    }
 
     companion object {
         fun produceMessage(method: String, params: String): String {

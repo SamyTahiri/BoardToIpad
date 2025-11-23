@@ -24,16 +24,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.websocket.WebSockets
+import io.ktor.client.plugins.websocket.pingInterval
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun App() {
     var dark by remember { mutableStateOf(true) }
     val textColor = if (dark) Color.White else Color.Black
-    var connected by remember { mutableStateOf(false) }
-    val api = remember { Api() }
-    val views = remember { Views(api) }
+    val nt = remember { NTClient(HttpClient(CIO) {
+        install(ContentNegotiation) {
+            json()
+        }
+        install(WebSockets) {
+            pingInterval = 1000.milliseconds
+        }
+    }) }
+    val views = remember { Views(nt) }
     val scope = rememberCoroutineScope()
     MaterialTheme {
         Surface(Modifier.fillMaxSize(), color =
@@ -54,7 +67,11 @@ fun App() {
                         Text("dark mode", Modifier, textColor)
                     }
                     Spacer(Modifier.width(10.dp))
-                    Text("Connected : $connected", Modifier.align(Alignment.CenterVertically), textColor)
+                    Button({
+                        scope.launch { nt.connect() }
+                    }) {
+                        Text("Connected : ${nt.connected}", Modifier.align(Alignment.CenterVertically), textColor)
+                    }
                 }
                 views.ListThings(scope)
                 views.PickleBalls()

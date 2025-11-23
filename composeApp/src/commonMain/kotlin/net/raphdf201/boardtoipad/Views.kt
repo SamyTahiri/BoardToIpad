@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-class Views(val api: Api) {
+class Views(val nt: NTClient) {
     @Composable
     fun PickleBalls() {
         Box(
@@ -272,26 +272,17 @@ class Views(val api: Api) {
 
     @Composable
     fun ListThings(scope: CoroutineScope) {
-        var t by remember { mutableStateOf<Table?>(null) }
+        var t by remember { mutableStateOf<List<String>>(emptyList()) }
         Column {
             Button({
                 scope.launch {
-                    t = api.list("smartdashboard")
+                    t = nt.getAllTopicNames()
                 }
             }) {
                 Text("ls")
             }
             LazyColumn {
-                item {
-                    Text("Keys :")
-                }
-                items(t?.keys?.toList() ?: emptyList()) {
-                    Text(it)
-                }
-                item {
-                    Text("Subtables :")
-                }
-                items(t?.subTables?.toList() ?: emptyList()) {
+                items(t) {
                     Text(it)
                 }
             }
