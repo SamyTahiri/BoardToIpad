@@ -1,4 +1,4 @@
 package net.raphdf201.boardtoipad
 
 const val robot = "robot.local"
-const val port = 5811
+const val port = 5810
