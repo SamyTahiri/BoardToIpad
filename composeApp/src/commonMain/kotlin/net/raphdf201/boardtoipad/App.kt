@@ -15,6 +15,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +31,9 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.plugins.websocket.pingInterval
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -37,7 +41,8 @@ import kotlin.time.Duration.Companion.milliseconds
 @Composable
 fun App() {
     var dark by remember { mutableStateOf(true) }
-    val textColor = if (dark) Color.White else Color.Black
+    var cinfo by remember { mutableStateOf("") }
+    var startedPeriodic by remember { mutableStateOf(false) }
     val nt = remember { NTClient(HttpClient(CIO) {
         install(ContentNegotiation) {
             json()
@@ -48,10 +53,20 @@ fun App() {
     }) }
     val views = remember { Views(nt) }
     val scope = rememberCoroutineScope()
+    val connected = nt.connected.collectAsState()
+    var currentMsg by remember { mutableStateOf<NTMessage?>(null) }
+    if (!startedPeriodic) LaunchedEffect(Unit) {
+        while (isActive) {
+            try {
+                currentMsg = nt.receiveMessage()
+            } catch (_: Exception) {
+            }
+            delay(50)
+        }
+    }
     MaterialTheme {
         Surface(Modifier.fillMaxSize(), color =
-            if (dark) Color(30, 36, 48)
-            else Color.White
+            Color(30, 36, 48)
         ) {
             Column(
                 Modifier.fillMaxSize().padding(10.dp),
@@ -64,16 +79,30 @@ fun App() {
                     Button({
                         dark = !dark
                     }) {
-                        Text("dark mode", Modifier, textColor)
+                        Text("dark mode", Modifier, Color.White)
                     }
                     Spacer(Modifier.width(10.dp))
                     Button({
-                        scope.launch { nt.connect() }
+                        println("connecting")
+                        scope.launch {
+                            nt.connect()
+                        }
                     }) {
-                        Text("Connected : ${nt.connected}", Modifier.align(Alignment.CenterVertically), textColor)
+                        Text("Connected : ${connected.value}", Modifier.align(Alignment.CenterVertically), Color.White)
+                    }
+                    Spacer(Modifier.width(10.dp))
+                    Button({
+                        println("getting conn info")
+                        cinfo = try {
+                            "ConnInfo : ${nt.getConnInfo()}"
+                        } catch (_: Exception) {
+                            ""
+                        }
+                    }) {
+                        Text(cinfo, Modifier, Color.White)
                     }
                 }
-                views.ListThings(scope)
+                views.ListThings(currentMsg)
                 views.PickleBalls()
             }
         }

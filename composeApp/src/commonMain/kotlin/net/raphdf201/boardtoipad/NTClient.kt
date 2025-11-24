@@ -9,6 +9,8 @@ import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
 import io.ktor.websocket.send
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.serialization.Serializable
@@ -19,7 +21,8 @@ import java.util.concurrent.ConcurrentHashMap
 class NTClient(private val client: HttpClient) {
     val subscriptions = ConcurrentHashMap<String, Int>()
     val publications = ConcurrentHashMap<String, Int>()
-    var connected = false
+    val _connected = MutableStateFlow(false)
+    val connected = _connected.asStateFlow()
     private val topics = ConcurrentHashMap<Int, TopicInfo>() // topicId -> topic info
     private val topicsByName = ConcurrentHashMap<String, Int>() // name -> topicId
     private var subId = 0
@@ -34,7 +37,18 @@ class NTClient(private val client: HttpClient) {
         ) {
             header("Sec-WebSocket-Protocol", "v4.1.networktables.first.wpi.edu")
         }
-        if (session.isActive) connected = true
+        if (session.isActive) {
+            println("connected")
+            _connected.value = true
+        }
+    }
+
+    fun getConnInfo(): String {
+        return "active : ${session.isActive} closeReason : ${session.closeReason}"
+    }
+
+    fun sessionConnected(): Boolean {
+        return ::session.isInitialized
     }
 
     suspend fun subscribe(topic: String) {
@@ -82,9 +96,7 @@ class NTClient(private val client: HttpClient) {
      * Call this in a loop to continuously receive messages
      */
     suspend fun receiveMessage(): NTMessage? {
-        val frame = session.incoming.receive()
-
-        return when (frame) {
+        return when (val frame = session.incoming.receive()) {
             is Frame.Text -> handleTextFrame(frame.readText())
             is Frame.Binary -> handleBinaryFrame(frame.data)
             else -> null
@@ -111,6 +123,7 @@ class NTClient(private val client: HttpClient) {
             val jsonMessages = Json.decodeFromString<List<JsonMessage>>(text)
             // Process all JSON messages in the frame
             jsonMessages.forEach { msg ->
+                println("received message : $msg")
                 when (msg.method) {
                     "announce" -> {
                         val announce = Json.decodeFromString<AnnounceParams>(msg.params.toString())
